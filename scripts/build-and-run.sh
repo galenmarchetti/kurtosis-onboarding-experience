@@ -24,11 +24,11 @@ if [ "${action}" == "help" ]; then
     show_help_and_exit
 fi
 
-# >>>>>>>> Add custom testsuite parameters here <<<<<<<<<<<<<
+## NEW USER ONBOARDING:
+## - Add the Docker image tag for a service you want to test to this map by modifying the placeholder "nginx".
+## - Change "myCustomServiceImage" to a name that reflects your actual service.
 custom_params_json='{
-    "apiServiceImage" :"kurtosistech/example-microservices_api",
-    "datastoreServiceImage": "kurtosistech/example-microservices_datastore",
-    "isKurtosisCoreDevMode": false
+    "myCustomServiceImage": "nginx"
 }'
 # >>>>>>>> Add custom testsuite parameters here <<<<<<<<<<<<<
 

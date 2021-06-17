@@ -46,19 +46,15 @@ func (t ExampleTestsuiteConfigurator) ParseParamsAndCreateSuite(paramsJsonStr st
 
 	/*
 		NEW USER ONBOARDING:
-		- Change the "MyCustomServiceImage" argument here to your own actual custom service image.
+		- Change the "CassandraImage" argument here to your own actual custom service image.
 	*/
 	suite := testsuite_impl.NewExampleTestsuite(
-		args.MyCustomServiceImage)
+		args.CassandraImage)
 	return suite, nil
 }
 
 func validateArgs(args ExampleTestsuiteArgs) error {
-	/*
-		NEW USER ONBOARDING:
-		- Change the "MyCustomServiceImage" argument here to your own actual custom service image.
-	*/
-	if strings.TrimSpace(args.MyCustomServiceImage) == "" {
+	if strings.TrimSpace(args.CassandraImage) == "" {
 		return stacktrace.NewError("Custom service image is empty.")
 	}
 	return nil

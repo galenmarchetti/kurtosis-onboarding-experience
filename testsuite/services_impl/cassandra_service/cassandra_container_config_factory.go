@@ -1,4 +1,4 @@
-package my_custom_service
+package cassandra_service
 /*
 	NEW USER ONBOARDING:
 	- Rename this package, this file, and the containing directory after your custom service.

@@ -5,7 +5,7 @@ package my_custom_test
 	- Rename constants, structs, properties, and variables to reflect your new service name.
 */
 import (
-	"github.com/galenmarchetti/kurtosis-onboarding-test/testsuite/services_impl/my_custom_service"
+	"github.com/galenmarchetti/kurtosis-onboarding-test/testsuite/services_impl/cassandra_service"
 	"github.com/kurtosis-tech/kurtosis-libs/golang/lib/networks"
 	"github.com/kurtosis-tech/kurtosis-libs/golang/lib/services"
 	"github.com/kurtosis-tech/kurtosis-libs/golang/lib/testsuite"
@@ -39,7 +39,7 @@ func (test MyCustomTest) Setup(networkCtx *networks.NetworkContext) (networks.Ne
 		NEW USER ONBOARDING:
 		- Add services multiple times using the below logic in order to have more than one service.
 	*/
-	configFactory := my_custom_service.NewMyCustomServiceContainerConfigFactory(test.MyCustomServiceImage)
+	configFactory := cassandra_service.NewMyCustomServiceContainerConfigFactory(test.MyCustomServiceImage)
 	_, hostPortBindings, availabilityChecker, err := networkCtx.AddService(myCustomServiceID, configFactory)
 	if err != nil {
 		return nil, stacktrace.Propagate(err, "An error occurred adding the service")
@@ -62,7 +62,7 @@ func (test MyCustomTest) Run(uncastedNetwork networks.Network) error {
 	}
 
 	// Necessary again due to no Go generics
-	castedService := uncastedService.(*my_custom_service.MyCustomService)
+	castedService := uncastedService.(*cassandra_service.MyCustomService)
 	logrus.Infof("Service is available: %v", castedService.IsAvailable())
 
 	/*

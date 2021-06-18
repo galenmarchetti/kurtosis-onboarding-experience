@@ -15,32 +15,32 @@ import (
 )
 
 const (
-	myCustomServiceID services.ServiceID = "myCustomService"
+	cassandraServiceID services.ServiceID = "myCustomService"
 
 	waitForStartupTimeBetweenPolls = 1 * time.Second
 	waitForStartupMaxPolls = 15
 )
 
-type MyCustomTest struct {
-	MyCustomServiceImage string
+type CassandraTest struct {
+	CassandraServiceImage string
 }
 
-func NewCassandraTest(image string) *MyCustomTest {
-	return &MyCustomTest{MyCustomServiceImage: image}
+func NewCassandraTest(image string) *CassandraTest {
+	return &CassandraTest{CassandraServiceImage: image}
 }
 
-func (test MyCustomTest) Configure(builder *testsuite.TestConfigurationBuilder) {
+func (test CassandraTest) Configure(builder *testsuite.TestConfigurationBuilder) {
 	builder.WithSetupTimeoutSeconds(30).WithRunTimeoutSeconds(30)
 }
 
-func (test MyCustomTest) Setup(networkCtx *networks.NetworkContext) (networks.Network, error) {
+func (test CassandraTest) Setup(networkCtx *networks.NetworkContext) (networks.Network, error) {
 	logrus.Infof("Setting up custom test.")
 	/*
 		NEW USER ONBOARDING:
 		- Add services multiple times using the below logic in order to have more than one service.
 	*/
-	configFactory := cassandra_service.NewCassandraServiceConfigFactory(test.MyCustomServiceImage)
-	_, hostPortBindings, availabilityChecker, err := networkCtx.AddService(myCustomServiceID, configFactory)
+	configFactory := cassandra_service.NewCassandraServiceConfigFactory(test.CassandraServiceImage)
+	_, hostPortBindings, availabilityChecker, err := networkCtx.AddService(cassandraServiceID, configFactory)
 	if err != nil {
 		return nil, stacktrace.Propagate(err, "An error occurred adding the service")
 	}
@@ -51,12 +51,12 @@ func (test MyCustomTest) Setup(networkCtx *networks.NetworkContext) (networks.Ne
 	return networkCtx, nil
 }
 
-func (test MyCustomTest) Run(uncastedNetwork networks.Network) error {
+func (test CassandraTest) Run(uncastedNetwork networks.Network) error {
 	logrus.Infof("Running custom test.")
 	// Necessary because Go doesn't have generics
 	castedNetwork := uncastedNetwork.(*networks.NetworkContext)
 
-	uncastedService, err := castedNetwork.GetService(myCustomServiceID)
+	uncastedService, err := castedNetwork.GetService(cassandraServiceID)
 	if err != nil {
 		return stacktrace.Propagate(err, "An error occurred getting the datastore service")
 	}

@@ -45,6 +45,8 @@ func (factory CassandraServiceConfigFactory) GetCreationConfig(containerIpAddr s
 }
 
 func (factory CassandraServiceConfigFactory) GetRunConfig(containerIpAddr string, generatedFileFilepaths map[string]string) (*services.ContainerRunConfig, error) {
-	result := services.NewContainerRunConfigBuilder().Build()
+	result := services.NewContainerRunConfigBuilder().WithEnvironmentVariableOverrides(map[string]string{
+		"CASSANDRA_LISTEN_ADDRESS": containerIpAddr,
+	}).Build()
 	return result, nil
 }

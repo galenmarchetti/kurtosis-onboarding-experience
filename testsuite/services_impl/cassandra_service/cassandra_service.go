@@ -14,6 +14,10 @@ func NewCassandraService(serviceCtx *services.ServiceContext, port int) *Cassand
 	return &CassandraService{serviceCtx: serviceCtx, port: port}
 }
 
+func (service CassandraService) GetIPAddress() string {
+	return service.serviceCtx.GetIPAddress()
+}
+
 // ===========================================================================================
 //                              Service interface methods
 // ===========================================================================================

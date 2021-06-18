@@ -1,6 +1,7 @@
 package cassandra_service
 
 import (
+	"github.com/gocql/gocql"
 	"github.com/kurtosis-tech/kurtosis-libs/golang/lib/services"
 )
 
@@ -30,5 +31,17 @@ func (service CassandraService) IsAvailable() bool {
 	          the database is initialized. Therefore, a sensible IsAvailable() function would poll the Cassandra
 	          native protocol port until the connection is accepted.
 	*/
+	// Define object used to represent local Cassandra cluster
+	cluster := gocql.NewCluster(service.GetIPAddress())
+	cluster.Consistency = gocql.One
+	cluster.ProtoVersion = 4
+
+	// Define object used to send queries to local Cassandra cluster
+	session, err := cluster.CreateSession()
+	if err != nil {
+		panic(err)
+	}
+	defer session.Close()
+
 	return true
 }

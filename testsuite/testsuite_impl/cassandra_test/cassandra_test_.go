@@ -28,7 +28,7 @@ func NewCassandraTest(image string) *CassandraTest {
 }
 
 func (test CassandraTest) Configure(builder *testsuite.TestConfigurationBuilder) {
-	builder.WithSetupTimeoutSeconds(30).WithRunTimeoutSeconds(30)
+	builder.WithSetupTimeoutSeconds(90).WithRunTimeoutSeconds(90)
 }
 
 func (test CassandraTest) Setup(networkCtx *networks.NetworkContext) (networks.Network, error) {

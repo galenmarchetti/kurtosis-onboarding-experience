@@ -12,52 +12,39 @@ import (
 
 const (
 	testVolumeMountpoint = "/test-volume"
-	/*
-		NEW USER ONBOARDING:
-		- Change this port number to the primary communication port that your service uses to speak to other services, or to clients.
-	*/
-	port = 1234
+
+	clusterCommunicationPort = 7000
+	nativeProtocolClientPort = 9042
+	jmxPort = 7199
 )
 
-type MyCustomServiceConfigFactory struct {
+type CassandraServiceConfigFactory struct {
 	image     string
 	port	  int
 }
 
-func NewMyCustomServiceContainerConfigFactory(image string) *MyCustomServiceConfigFactory {
-	return &MyCustomServiceConfigFactory{image: image}
+func NewCassandraServiceConfigFactory(image string) *CassandraServiceConfigFactory {
+	return &CassandraServiceConfigFactory{image: image}
 }
 
 
-func (factory MyCustomServiceConfigFactory) GetCreationConfig(containerIpAddr string) (*services.ContainerCreationConfig, error) {
+func (factory CassandraServiceConfigFactory) GetCreationConfig(containerIpAddr string) (*services.ContainerCreationConfig, error) {
 	result := services.NewContainerCreationConfigBuilder(
 		factory.image,
 		testVolumeMountpoint,
-		func(serviceCtx *services.ServiceContext) services.Service { return NewMyCustomService(serviceCtx, port) },
+		func(serviceCtx *services.ServiceContext) services.Service { return NewCassandraService(serviceCtx, nativeProtocolClientPort) },
 	).WithUsedPorts(map[string]bool{
 		/*
 			NEW USER ONBOARDING:
 			- Add any other ports that your service needs to have open to other services, or to the
 		*/
-		fmt.Sprintf("%v/tcp", port): true,
+		fmt.Sprintf("%v/tcp", nativeProtocolClientPort): true,
 	}).Build()
 
 	return result, nil
 }
 
-func (factory MyCustomServiceConfigFactory) GetRunConfig(containerIpAddr string, generatedFileFilepaths map[string]string) (*services.ContainerRunConfig, error) {
-	/*
-		NEW USER ONBOARDING:
-		- Change this start command to reflect the actual start command of your custom service.
-	 */
-	startCmd := []string{
-		"/path/to/start/binary",
-		"--<config-flag-1",
-		"config-flag-value-1",
-		"--<config-flag-2",
-		"config-flag-value-2",
-		"...",
-	}
-	result := services.NewContainerRunConfigBuilder().WithCmdOverride(startCmd).Build()
+func (factory CassandraServiceConfigFactory) GetRunConfig(containerIpAddr string, generatedFileFilepaths map[string]string) (*services.ContainerRunConfig, error) {
+	result := services.NewContainerRunConfigBuilder().Build()
 	return result, nil
 }

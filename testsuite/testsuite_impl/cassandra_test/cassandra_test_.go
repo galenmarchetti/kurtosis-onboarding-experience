@@ -1,4 +1,4 @@
-package my_custom_test
+package cassandra_test
 /*
 	NEW USER ONBOARDING:
 	- Rename this package, this file, and the containing directory to reflect the functionality of your custom test.
@@ -25,7 +25,7 @@ type MyCustomTest struct {
 	MyCustomServiceImage string
 }
 
-func NewMyCustomTest(image string) *MyCustomTest {
+func NewCassandraTest(image string) *MyCustomTest {
 	return &MyCustomTest{MyCustomServiceImage: image}
 }
 
@@ -39,7 +39,7 @@ func (test MyCustomTest) Setup(networkCtx *networks.NetworkContext) (networks.Ne
 		NEW USER ONBOARDING:
 		- Add services multiple times using the below logic in order to have more than one service.
 	*/
-	configFactory := cassandra_service.NewMyCustomServiceContainerConfigFactory(test.MyCustomServiceImage)
+	configFactory := cassandra_service.NewCassandraServiceConfigFactory(test.MyCustomServiceImage)
 	_, hostPortBindings, availabilityChecker, err := networkCtx.AddService(myCustomServiceID, configFactory)
 	if err != nil {
 		return nil, stacktrace.Propagate(err, "An error occurred adding the service")
@@ -62,7 +62,7 @@ func (test MyCustomTest) Run(uncastedNetwork networks.Network) error {
 	}
 
 	// Necessary again due to no Go generics
-	castedService := uncastedService.(*cassandra_service.MyCustomService)
+	castedService := uncastedService.(*cassandra_service.CassandraService)
 	logrus.Infof("Service is available: %v", castedService.IsAvailable())
 
 	/*

@@ -10,19 +10,19 @@ import (
 )
 
 
-type MyCustomService struct {
+type CassandraService struct {
 	serviceCtx *services.ServiceContext
 	port       int
 }
 
-func NewMyCustomService(serviceCtx *services.ServiceContext, port int) *MyCustomService {
-	return &MyCustomService{serviceCtx: serviceCtx, port: port}
+func NewCassandraService(serviceCtx *services.ServiceContext, port int) *CassandraService {
+	return &CassandraService{serviceCtx: serviceCtx, port: port}
 }
 
 // ===========================================================================================
 //                              Service interface methods
 // ===========================================================================================
-func (service MyCustomService) IsAvailable() bool {
+func (service CassandraService) IsAvailable() bool {
 	/*
 		NEW USER ONBOARDING:
 		- Write logic, likely using the port property of your service object, to verify that your service is available and ready to be tested.

@@ -5,6 +5,6 @@
 
 package execution_impl
 
-type ExampleTestsuiteArgs struct {
+type CassandraTestsuiteArgs struct {
 	CassandraImage string `json:"cassandraImageName"`
 }

@@ -44,10 +44,6 @@ func (t CassandraTestsuiteConfigurator) ParseParamsAndCreateSuite(paramsJsonStr 
 		return nil, stacktrace.Propagate(err, "An error occurred validating the deserialized testsuite params")
 	}
 
-	/*
-		NEW USER ONBOARDING:
-		- Change the "CassandraImage" argument here to your own actual custom service image.
-	*/
 	suite := testsuite_impl.NewCassandraTestsuite(
 		args.CassandraImage)
 	return suite, nil

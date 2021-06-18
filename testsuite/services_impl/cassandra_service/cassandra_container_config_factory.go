@@ -36,7 +36,7 @@ func (factory CassandraServiceConfigFactory) GetCreationConfig(containerIpAddr s
 	).WithUsedPorts(map[string]bool{
 		/*
 			NEW USER ONBOARDING:
-			- Add any other ports that your service needs to have open to other services, or to the
+			- Add any other ports that your service needs to have open to other services to this "used ports" map
 		*/
 		fmt.Sprintf("%v/tcp", nativeProtocolClientPort): true,
 	}).Build()

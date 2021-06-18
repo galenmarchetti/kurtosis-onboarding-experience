@@ -25,7 +25,11 @@ func NewCassandraService(serviceCtx *services.ServiceContext, port int) *Cassand
 func (service CassandraService) IsAvailable() bool {
 	/*
 		NEW USER ONBOARDING:
-		- Write logic, likely using the port property of your service object, to verify that your service is available and ready to be tested.
+		- Write logic to verify that Cassandra is available and ready to be tested.
+
+		NOTE: Cassandra containers create a default database on startup, and do not accept connections until
+	          the database is initialized. Therefore, a sensible IsAvailable() function would poll the Cassandra
+	          native protocol port until the connection is accepted.
 	*/
 	return true
 }

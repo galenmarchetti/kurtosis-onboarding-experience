@@ -65,26 +65,27 @@ func (test CassandraTest) Run(uncastedNetwork networks.Network) error {
 
 	session, err := castedService.CreateSession()
 	if err != nil {
-		panic(err)
+		return stacktrace.Propagate(err, "Failed to create session on the cassandra service.")
 	}
 	defer session.Close()
 
 	// Create a keyspace "test" to use for testing purposes
 	err = session.Query(`CREATE KEYSPACE test WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 3 }`).Exec()
 	if err != nil {
-		panic(err)
+		return stacktrace.Propagate(err, "Failed to create cassandra keyspace.")
+
 	}
 
 	// Create a table "tweet" to use for testing purposes
 	err = session.Query(`CREATE TABLE test.tweet(timeline text, id timeuuid PRIMARY KEY, text text)`).Exec()
 	if err != nil {
-		panic(err)
+		return stacktrace.Propagate(err, "Failed to create tweet table.")
 	}
 
 	// Insert a tweet into "tweet" table
 	err = session.Query(`INSERT INTO test.tweet (timeline, id, text) VALUES (?, ?, ?)`, "me", gocql.TimeUUID(), "hello world").Exec()
 	if err != nil {
-		panic(err)
+		return stacktrace.Propagate(err, "Failed to insert tweet into table.")
 	}
 
 	// Read a tweet from "tweet" table
@@ -94,13 +95,13 @@ func (test CassandraTest) Run(uncastedNetwork networks.Network) error {
 	)
 	err = session.Query(`SELECT id, text FROM test.tweet WHERE timeline = ? LIMIT 1 ALLOW FILTERING`, "me").Scan(&id, &text)
 	if err != nil {
-		panic(err)
+		return stacktrace.Propagate(err, "Failed to read lines from tweet table.")
 	}
 
-	// Print the contents of the tweet
-	fmt.Printf("Tweet: %v, %v\n", id, text)
-	// Print results of test condition
-	fmt.Printf("Test passed?: %v\n", text == "hello world")
+	if text == "hello world" {
+		return nil
+	}
 
-	return nil
+	return stacktrace.NewError("Cassandra test failed.")
+
 }

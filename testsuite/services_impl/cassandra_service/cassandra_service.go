@@ -4,9 +4,7 @@ import (
 	"github.com/gocql/gocql"
 	"github.com/kurtosis-tech/kurtosis-libs/golang/lib/services"
 	"github.com/palantir/stacktrace"
-	"github.com/sirupsen/logrus"
 )
-
 
 type CassandraService struct {
 	serviceCtx *services.ServiceContext
@@ -46,11 +44,9 @@ func (service CassandraService) CreateSession() (*gocql.Session, error) {
 func (service CassandraService) IsAvailable() bool {
 	session, err := service.CreateSession()
 	if err != nil {
-		logrus.Infof("Failed to initiate session in AvailabilityChecker.")
-		stacktrace.Propagate(err, "Failed to initiate session.")
+		stacktrace.Propagate(err, "Failed to initiate session on Cassandra service.")
 		return false
 	}
-	logrus.Infof("Succeeded in initiating session in AvailabilityChecker.")
 	defer session.Close()
 
 	return true

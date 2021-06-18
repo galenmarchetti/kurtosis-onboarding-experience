@@ -63,7 +63,7 @@ func (test CassandraTest) Run(uncastedNetwork networks.Network) error {
 	castedService := uncastedService.(*cassandra_service.CassandraService)
 	logrus.Infof("Service is available: %v", castedService.IsAvailable())
 
-	time.Sleep(10 * time.Second)
+	time.Sleep(30 * time.Second)
 	// Define object used to represent local Cassandra cluster
 	cluster := gocql.NewCluster(castedService.GetIPAddress())
 	cluster.Consistency = gocql.One

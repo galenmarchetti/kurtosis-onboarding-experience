@@ -16,7 +16,7 @@ const (
 	cassandraServiceID services.ServiceID = "cassandra-1"
 
 	waitForStartupTimeBetweenPolls = 1 * time.Second
-	waitForStartupMaxPolls = 15
+	waitForStartupMaxPolls = 60
 )
 
 type CassandraTest struct {
@@ -28,7 +28,7 @@ func NewCassandraTest(image string) *CassandraTest {
 }
 
 func (test CassandraTest) Configure(builder *testsuite.TestConfigurationBuilder) {
-	builder.WithSetupTimeoutSeconds(90).WithRunTimeoutSeconds(90)
+	builder.WithSetupTimeoutSeconds(180).WithRunTimeoutSeconds(180)
 }
 
 func (test CassandraTest) Setup(networkCtx *networks.NetworkContext) (networks.Network, error) {
@@ -63,14 +63,7 @@ func (test CassandraTest) Run(uncastedNetwork networks.Network) error {
 	castedService := uncastedService.(*cassandra_service.CassandraService)
 	logrus.Infof("Service is available: %v", castedService.IsAvailable())
 
-	time.Sleep(30 * time.Second)
-	// Define object used to represent local Cassandra cluster
-	cluster := gocql.NewCluster(castedService.GetIPAddress())
-	cluster.Consistency = gocql.One
-	cluster.ProtoVersion = 4
-
-	// Define object used to send queries to local Cassandra cluster
-	session, err := cluster.CreateSession()
+	session, err := castedService.CreateSession()
 	if err != nil {
 		panic(err)
 	}

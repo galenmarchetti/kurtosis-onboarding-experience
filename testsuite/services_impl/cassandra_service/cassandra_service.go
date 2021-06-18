@@ -21,19 +21,12 @@ func (service CassandraService) GetIPAddress() string {
 	return service.serviceCtx.GetIPAddress()
 }
 
-// ===========================================================================================
-//                              Service interface methods
-// ===========================================================================================
-func (service CassandraService) IsAvailable() bool {
-	/*
-		NEW USER ONBOARDING:
-		- Write logic to verify that Cassandra is available and ready to be tested.
-
-		NOTE: Cassandra containers create a default database on startup, and do not accept connections until
-	          the database is initialized. Therefore, a sensible IsAvailable() function would poll the Cassandra
-	          native protocol port until the connection is accepted.
-	*/
-	// Define object used to represent local Cassandra cluster
+/*
+	Creates and returns an open session for the Cassandra service.
+	NOTE: This session is not automatically closed. After calling, make sure to call session.Close()
+	on the returning object.
+ */
+func (service CassandraService) CreateSession() (*gocql.Session, error) {
 	cluster := gocql.NewCluster(service.GetIPAddress())
 	cluster.Consistency = gocql.One
 	cluster.ProtoVersion = 4
@@ -41,9 +34,23 @@ func (service CassandraService) IsAvailable() bool {
 	// Define object used to send queries to local Cassandra cluster
 	session, err := cluster.CreateSession()
 	if err != nil {
+		return nil, stacktrace.Propagate(err, "Failed to initiate session.")
+	}
+
+	return session, nil
+}
+
+// ===========================================================================================
+//                              Service interface methods
+// ===========================================================================================
+func (service CassandraService) IsAvailable() bool {
+	session, err := service.CreateSession()
+	if err != nil {
 		logrus.Infof("Failed to initiate session in AvailabilityChecker.")
 		stacktrace.Propagate(err, "Failed to initiate session.")
+		return false
 	}
+	logrus.Infof("Succeeded in initiating session in AvailabilityChecker.")
 	defer session.Close()
 
 	return true

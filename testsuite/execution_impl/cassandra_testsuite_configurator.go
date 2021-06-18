@@ -14,13 +14,13 @@ import (
 	"strings"
 )
 
-type ExampleTestsuiteConfigurator struct {}
+type CassandraTestsuiteConfigurator struct {}
 
-func NewExampleTestsuiteConfigurator() *ExampleTestsuiteConfigurator {
-	return &ExampleTestsuiteConfigurator{}
+func NewCassandraTestsuiteConfigurator() *CassandraTestsuiteConfigurator {
+	return &CassandraTestsuiteConfigurator{}
 }
 
-func (t ExampleTestsuiteConfigurator) SetLogLevel(logLevelStr string) error {
+func (t CassandraTestsuiteConfigurator) SetLogLevel(logLevelStr string) error {
 	level, err := logrus.ParseLevel(logLevelStr)
 	if err != nil {
 		return stacktrace.Propagate(err, "An error occurred parsing loglevel string '%v'", logLevelStr)
@@ -33,9 +33,9 @@ func (t ExampleTestsuiteConfigurator) SetLogLevel(logLevelStr string) error {
 	return nil
 }
 
-func (t ExampleTestsuiteConfigurator) ParseParamsAndCreateSuite(paramsJsonStr string) (testsuite.TestSuite, error) {
+func (t CassandraTestsuiteConfigurator) ParseParamsAndCreateSuite(paramsJsonStr string) (testsuite.TestSuite, error) {
 	paramsJsonBytes := []byte(paramsJsonStr)
-	var args ExampleTestsuiteArgs
+	var args CassandraTestsuiteArgs
 	if err := json.Unmarshal(paramsJsonBytes, &args); err != nil {
 		return nil, stacktrace.Propagate(err, "An error occurred deserializing the testsuite params JSON")
 	}
@@ -44,22 +44,14 @@ func (t ExampleTestsuiteConfigurator) ParseParamsAndCreateSuite(paramsJsonStr st
 		return nil, stacktrace.Propagate(err, "An error occurred validating the deserialized testsuite params")
 	}
 
-	/*
-		NEW USER ONBOARDING:
-		- Change the "MyCustomServiceImage" argument here to your own actual custom service image.
-	*/
-	suite := testsuite_impl.NewExampleTestsuite(
-		args.MyCustomServiceImage)
+	suite := testsuite_impl.NewCassandraTestsuite(
+		args.CassandraImage)
 	return suite, nil
 }
 
-func validateArgs(args ExampleTestsuiteArgs) error {
-	/*
-		NEW USER ONBOARDING:
-		- Change the "MyCustomServiceImage" argument here to your own actual custom service image.
-	*/
-	if strings.TrimSpace(args.MyCustomServiceImage) == "" {
-		return stacktrace.NewError("Custom service image is empty.")
+func validateArgs(args CassandraTestsuiteArgs) error {
+	if strings.TrimSpace(args.CassandraImage) == "" {
+		return stacktrace.NewError("Cassandra service image is empty.")
 	}
 	return nil
 }

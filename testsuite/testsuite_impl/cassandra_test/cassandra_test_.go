@@ -1,11 +1,7 @@
-package my_custom_test
-/*
-	NEW USER ONBOARDING:
-	- Rename this package, this file, and the containing directory to reflect the functionality of your custom test.
-	- Rename constants, structs, properties, and variables to reflect your new service name.
-*/
+package cassandra_test
+
 import (
-	"github.com/galenmarchetti/kurtosis-onboarding-test/testsuite/services_impl/my_custom_service"
+	"github.com/galenmarchetti/kurtosis-onboarding-test/testsuite/services_impl/cassandra_service"
 	"github.com/kurtosis-tech/kurtosis-libs/golang/lib/networks"
 	"github.com/kurtosis-tech/kurtosis-libs/golang/lib/services"
 	"github.com/kurtosis-tech/kurtosis-libs/golang/lib/testsuite"
@@ -15,32 +11,32 @@ import (
 )
 
 const (
-	myCustomServiceID services.ServiceID = "myCustomService"
+	cassandraServiceID services.ServiceID = "cassandra-1"
 
 	waitForStartupTimeBetweenPolls = 1 * time.Second
 	waitForStartupMaxPolls = 15
 )
 
-type MyCustomTest struct {
-	MyCustomServiceImage string
+type CassandraTest struct {
+	CassandraServiceImage string
 }
 
-func NewMyCustomTest(image string) *MyCustomTest {
-	return &MyCustomTest{MyCustomServiceImage: image}
+func NewCassandraTest(image string) *CassandraTest {
+	return &CassandraTest{CassandraServiceImage: image}
 }
 
-func (test MyCustomTest) Configure(builder *testsuite.TestConfigurationBuilder) {
+func (test CassandraTest) Configure(builder *testsuite.TestConfigurationBuilder) {
 	builder.WithSetupTimeoutSeconds(30).WithRunTimeoutSeconds(30)
 }
 
-func (test MyCustomTest) Setup(networkCtx *networks.NetworkContext) (networks.Network, error) {
-	logrus.Infof("Setting up custom test.")
+func (test CassandraTest) Setup(networkCtx *networks.NetworkContext) (networks.Network, error) {
+	logrus.Infof("Setting up cassandra test.")
 	/*
 		NEW USER ONBOARDING:
 		- Add services multiple times using the below logic in order to have more than one service.
 	*/
-	configFactory := my_custom_service.NewMyCustomServiceContainerConfigFactory(test.MyCustomServiceImage)
-	_, hostPortBindings, availabilityChecker, err := networkCtx.AddService(myCustomServiceID, configFactory)
+	configFactory := cassandra_service.NewCassandraServiceConfigFactory(test.CassandraServiceImage)
+	_, hostPortBindings, availabilityChecker, err := networkCtx.AddService(cassandraServiceID, configFactory)
 	if err != nil {
 		return nil, stacktrace.Propagate(err, "An error occurred adding the service")
 	}
@@ -51,18 +47,18 @@ func (test MyCustomTest) Setup(networkCtx *networks.NetworkContext) (networks.Ne
 	return networkCtx, nil
 }
 
-func (test MyCustomTest) Run(uncastedNetwork networks.Network) error {
-	logrus.Infof("Running custom test.")
+func (test CassandraTest) Run(uncastedNetwork networks.Network) error {
+	logrus.Infof("Running cassandra test.")
 	// Necessary because Go doesn't have generics
 	castedNetwork := uncastedNetwork.(*networks.NetworkContext)
 
-	uncastedService, err := castedNetwork.GetService(myCustomServiceID)
+	uncastedService, err := castedNetwork.GetService(cassandraServiceID)
 	if err != nil {
 		return stacktrace.Propagate(err, "An error occurred getting the datastore service")
 	}
 
 	// Necessary again due to no Go generics
-	castedService := uncastedService.(*my_custom_service.MyCustomService)
+	castedService := uncastedService.(*cassandra_service.CassandraService)
 	logrus.Infof("Service is available: %v", castedService.IsAvailable())
 
 	/*

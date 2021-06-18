@@ -51,7 +51,7 @@ func (t CassandraTestsuiteConfigurator) ParseParamsAndCreateSuite(paramsJsonStr 
 
 func validateArgs(args CassandraTestsuiteArgs) error {
 	if strings.TrimSpace(args.CassandraImage) == "" {
-		return stacktrace.NewError("Custom service image is empty.")
+		return stacktrace.NewError("Cassandra service image is empty.")
 	}
 	return nil
 }

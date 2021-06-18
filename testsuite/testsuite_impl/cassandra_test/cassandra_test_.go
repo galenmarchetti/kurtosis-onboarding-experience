@@ -1,9 +1,5 @@
 package cassandra_test
-/*
-	NEW USER ONBOARDING:
-	- Rename this package, this file, and the containing directory to reflect the functionality of your custom test.
-	- Rename constants, structs, properties, and variables to reflect your new service name.
-*/
+
 import (
 	"github.com/galenmarchetti/kurtosis-onboarding-test/testsuite/services_impl/cassandra_service"
 	"github.com/kurtosis-tech/kurtosis-libs/golang/lib/networks"
@@ -15,7 +11,7 @@ import (
 )
 
 const (
-	cassandraServiceID services.ServiceID = "myCustomService"
+	cassandraServiceID services.ServiceID = "cassandra-1"
 
 	waitForStartupTimeBetweenPolls = 1 * time.Second
 	waitForStartupMaxPolls = 15
@@ -34,7 +30,7 @@ func (test CassandraTest) Configure(builder *testsuite.TestConfigurationBuilder)
 }
 
 func (test CassandraTest) Setup(networkCtx *networks.NetworkContext) (networks.Network, error) {
-	logrus.Infof("Setting up custom test.")
+	logrus.Infof("Setting up cassandra test.")
 	/*
 		NEW USER ONBOARDING:
 		- Add services multiple times using the below logic in order to have more than one service.
@@ -52,7 +48,7 @@ func (test CassandraTest) Setup(networkCtx *networks.NetworkContext) (networks.N
 }
 
 func (test CassandraTest) Run(uncastedNetwork networks.Network) error {
-	logrus.Infof("Running custom test.")
+	logrus.Infof("Running cassandra test.")
 	// Necessary because Go doesn't have generics
 	castedNetwork := uncastedNetwork.(*networks.NetworkContext)
 

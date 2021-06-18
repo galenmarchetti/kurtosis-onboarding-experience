@@ -1,9 +1,4 @@
 package cassandra_service
-/*
-	NEW USER ONBOARDING:
-	- Rename this package, this file, and the containing directory to reflect the functionality of your custom test.
-	- Rename all structs and functions within to reflect your custom service.
-*/
 
 import (
 	"github.com/kurtosis-tech/kurtosis-libs/golang/lib/services"

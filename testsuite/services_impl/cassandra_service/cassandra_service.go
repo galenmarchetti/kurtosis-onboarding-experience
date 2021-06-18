@@ -3,6 +3,8 @@ package cassandra_service
 import (
 	"github.com/gocql/gocql"
 	"github.com/kurtosis-tech/kurtosis-libs/golang/lib/services"
+	"github.com/palantir/stacktrace"
+	"github.com/sirupsen/logrus"
 )
 
 
@@ -39,7 +41,8 @@ func (service CassandraService) IsAvailable() bool {
 	// Define object used to send queries to local Cassandra cluster
 	session, err := cluster.CreateSession()
 	if err != nil {
-		panic(err)
+		logrus.Infof("Failed to initiate session in AvailabilityChecker.")
+		stacktrace.Propagate(err, "Failed to initiate session.")
 	}
 	defer session.Close()
 

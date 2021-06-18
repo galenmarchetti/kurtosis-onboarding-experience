@@ -1,7 +1,6 @@
 package cassandra_test
 
 import (
-	"fmt"
 	"github.com/gocql/gocql"
 	"github.com/galenmarchetti/kurtosis-onboarding-test/testsuite/services_impl/cassandra_service"
 	"github.com/kurtosis-tech/kurtosis-libs/golang/lib/networks"

@@ -24,3 +24,9 @@ Cassandra Onboarding Testsuite
     2. Add the test logic in [this Gist](https://gist.github.com/galenmarchetti/118a2555749c7c47760cb58faa251795) to the Run() function in the Cassandra test, replacing the final return nil line with the return line from the code in the Gist.
     3. Verify that running `bash scripts/build-and-run.sh all` generates output indicating that one test ran (cassandraTest), and that the test contained business logic for a Cassandra test, and that it passed.
 
+## Implement the Advanced Cassandra Test
+
+1. Add a second cassandra node to your Kurtosis-deployed cassandra cluster.
+    1. TODO TODO TODO Fill this in
+2. Add a third cassandra node to your Kurtosis-deployed cassandra cluster.
+    1. TODO TODO TODO Fill this in

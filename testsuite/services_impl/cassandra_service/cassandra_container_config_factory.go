@@ -1,9 +1,4 @@
 package cassandra_service
-/*
-	NEW USER ONBOARDING:
-	- Rename this package, this file, and the containing directory after your custom service.
-	- Rename all structs and functions in this file after your custom service.
-*/
 
 import (
 	"fmt"

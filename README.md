@@ -27,6 +27,7 @@ Cassandra Onboarding Testsuite
 ## Implement the Advanced Cassandra Test
 
 1. Add a second cassandra node to your Kurtosis-deployed cassandra cluster.
-    1. TODO TODO TODO Fill this in
+    1. Add the "cluster communication port" as a used port to the container creation configuration builder in the GetCreationConfig method of `testsuite/services_impl/cassandra_service/cassandra_container_config_factory.go`.
+    2. 
 2. Add a third cassandra node to your Kurtosis-deployed cassandra cluster.
     1. TODO TODO TODO Fill this in

@@ -101,6 +101,6 @@ func (test CassandraTest) Run(uncastedNetwork networks.Network) error {
 		return nil
 	}
 
-	return stacktrace.NewError("Cassandra test failed.")
+	return stacktrace.NewError("Cassandra test failed, text is: %v", text)
 
 }

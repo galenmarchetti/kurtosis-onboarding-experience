@@ -14,12 +14,12 @@ const (
 )
 
 type CassandraServiceConfigFactory struct {
-	image     string
-	port	  int
+	image string
+	cassandraSeed string
 }
 
-func NewCassandraServiceConfigFactory(image string) *CassandraServiceConfigFactory {
-	return &CassandraServiceConfigFactory{image: image}
+func NewCassandraServiceConfigFactory(image string, cassandraSeed string) *CassandraServiceConfigFactory {
+	return &CassandraServiceConfigFactory{image: image, cassandraSeed: cassandraSeed}
 }
 
 
@@ -34,12 +34,16 @@ func (factory CassandraServiceConfigFactory) GetCreationConfig(containerIpAddr s
 			- Add any other ports that your service needs to have open to other services to this "used ports" map
 		*/
 		fmt.Sprintf("%v/tcp", nativeProtocolClientPort): true,
+		fmt.Sprintf("%v/tcp", clusterCommunicationPort): true,
 	}).Build()
 
 	return result, nil
 }
 
 func (factory CassandraServiceConfigFactory) GetRunConfig(containerIpAddr string, generatedFileFilepaths map[string]string) (*services.ContainerRunConfig, error) {
-	result := services.NewContainerRunConfigBuilder().Build()
+	result := services.NewContainerRunConfigBuilder().WithEnvironmentVariableOverrides(map[string]string{
+		"CASSANDRA_SEEDS": factory.cassandraSeed,
+		"CASSANDRA_LISTEN_ADDRESS": containerIpAddr,
+	}).Build()
 	return result, nil
 }

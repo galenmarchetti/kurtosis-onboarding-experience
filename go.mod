@@ -3,6 +3,7 @@ module github.com/galenmarchetti/kurtosis-onboarding-test
 go 1.13
 
 require (
+	github.com/gocql/gocql v0.0.0-20210621133426-d83b80dfb480 // indirect
 	github.com/golang/protobuf v1.5.2
 	github.com/kurtosis-tech/kurtosis-client/golang v0.0.0-20210609143139-cb8f6346f0ba // indirect
 	github.com/kurtosis-tech/kurtosis-libs/golang v0.0.0-20210518203140-29f776ac68e8 // indirect

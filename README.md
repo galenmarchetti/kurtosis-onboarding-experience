@@ -1,7 +1,7 @@
 Cassandra Onboarding Testsuite
 =====================
 
-Implement the Basic Cassandra Test
+## Implement the Basic Cassandra Test
 
 1. Verify that the Docker daemon is running on your local machine.
 2. Run the empty Cassandra test to verify that everything works on your local machine.

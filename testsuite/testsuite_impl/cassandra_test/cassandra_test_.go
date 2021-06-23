@@ -8,25 +8,26 @@ import (
 	"github.com/kurtosis-tech/kurtosis-libs/golang/lib/testsuite"
 	"github.com/palantir/stacktrace"
 	"github.com/sirupsen/logrus"
-	"strconv"
 	"time"
 )
 
 const (
-	cassandraSeedId = services.ServiceID("cassandra-seed")
-	cassandraIdBase = "cassandra-"
-
 	waitForStartupTimeBetweenPolls = 1 * time.Second
 	waitForStartupMaxPolls = 90
 )
 
+var cassandraIds = []services.ServiceID{
+	"cassandra-0",
+	"cassandra-1",
+	"cassandra-2",
+}
+
 type CassandraTest struct {
 	CassandraServiceImage string
-	cassandraServiceIds []services.ServiceID
 }
 
 func NewCassandraTest(image string) *CassandraTest {
-	return &CassandraTest{CassandraServiceImage: image, cassandraServiceIds: []services.ServiceID{}}
+	return &CassandraTest{CassandraServiceImage: image}
 }
 
 func (test *CassandraTest) Configure(builder *testsuite.TestConfigurationBuilder) {
@@ -40,16 +41,14 @@ func (test *CassandraTest) Setup(networkCtx *networks.NetworkContext) (networks.
 		- Add services multiple times using the below logic in order to have more than one service.
 	*/
 	configFactory := cassandra_service.NewCassandraServiceConfigFactory(test.CassandraServiceImage, "")
-	service, hostPortBindings, availabilityChecker, err := networkCtx.AddService(cassandraSeedId, configFactory)
+	service, hostPortBindings, availabilityChecker, err := networkCtx.AddService(cassandraIds[0], configFactory)
 	if err != nil {
 		return nil, stacktrace.Propagate(err, "An error occurred adding the service")
 	}
 	seedIP := service.(*cassandra_service.CassandraService).GetIPAddress()
-	for i := 0; i < 2; i++ {
-		serviceId := services.ServiceID(cassandraIdBase + strconv.Itoa(i))
-		test.cassandraServiceIds = append(test.cassandraServiceIds, serviceId)
+	for i := 1; i < 3; i++ {
 		configFactory = cassandra_service.NewCassandraServiceConfigFactory(test.CassandraServiceImage, seedIP)
-		_, hostPortBindings, availabilityChecker, err = networkCtx.AddService(serviceId, configFactory)
+		_, hostPortBindings, availabilityChecker, err = networkCtx.AddService(cassandraIds[i], configFactory)
 		if err != nil {
 			return nil, stacktrace.Propagate(err, "An error occurred adding the service")
 		}
@@ -68,8 +67,8 @@ func (test *CassandraTest) Run(uncastedNetwork networks.Network) error {
 	castedNetwork := uncastedNetwork.(*networks.NetworkContext)
 	logrus.Infof("casted network")
 
-	uncastedService, err := castedNetwork.GetService(test.cassandraServiceIds[1])
-	logrus.Infof("got uncasted network")
+	uncastedService, err := castedNetwork.GetService(cassandraIds[2])
+	logrus.Infof("got uncasted service")
 	if err != nil {
 		return stacktrace.Propagate(err, "An error occurred getting the cassandra service")
 	}

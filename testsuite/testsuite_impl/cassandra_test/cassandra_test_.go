@@ -46,7 +46,7 @@ func (test *CassandraTest) Setup(networkCtx *networks.NetworkContext) (networks.
 		return nil, stacktrace.Propagate(err, "An error occurred adding the service")
 	}
 	seedIP := service.(*cassandra_service.CassandraService).GetIPAddress()
-	for i := 1; i < 3; i++ {
+	for i := 1; i < 2; i++ {
 		configFactory = cassandra_service.NewCassandraServiceConfigFactory(test.CassandraServiceImage, seedIP)
 		_, hostPortBindings, availabilityChecker, err = networkCtx.AddService(cassandraIds[i], configFactory)
 		if err != nil {
@@ -67,7 +67,7 @@ func (test *CassandraTest) Run(uncastedNetwork networks.Network) error {
 	castedNetwork := uncastedNetwork.(*networks.NetworkContext)
 	logrus.Infof("casted network")
 
-	uncastedService, err := castedNetwork.GetService(cassandraIds[2])
+	uncastedService, err := castedNetwork.GetService(cassandraIds[1])
 	logrus.Infof("got uncasted service")
 	if err != nil {
 		return stacktrace.Propagate(err, "An error occurred getting the cassandra service")

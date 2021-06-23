@@ -36,17 +36,18 @@ func (test *CassandraTest) Configure(builder *testsuite.TestConfigurationBuilder
 
 func (test *CassandraTest) Setup(networkCtx *networks.NetworkContext) (networks.Network, error) {
 	logrus.Infof("Setting up cassandra test.")
-	/*
-		NEW USER ONBOARDING:
-		- Add services multiple times using the below logic in order to have more than one service.
-	*/
+
+	// Start the seed node, which doesn't have a cluster to join.
 	configFactory := cassandra_service.NewCassandraServiceConfigFactory(test.CassandraServiceImage, "")
 	service, hostPortBindings, availabilityChecker, err := networkCtx.AddService(cassandraIds[0], configFactory)
 	if err != nil {
 		return nil, stacktrace.Propagate(err, "An error occurred adding the service")
 	}
+	// Get the seed node IP address, so that subsequent nodes can join its cluster.
 	seedIP := service.(*cassandra_service.CassandraService).GetIPAddress()
-	for i := 1; i < 2; i++ {
+
+	// Add the remaining nodes, waiting for each to become available before starting the next.
+	for i := 1; i < 3; i++ {
 		configFactory = cassandra_service.NewCassandraServiceConfigFactory(test.CassandraServiceImage, seedIP)
 		_, hostPortBindings, availabilityChecker, err = networkCtx.AddService(cassandraIds[i], configFactory)
 		if err != nil {
@@ -67,7 +68,7 @@ func (test *CassandraTest) Run(uncastedNetwork networks.Network) error {
 	castedNetwork := uncastedNetwork.(*networks.NetworkContext)
 	logrus.Infof("casted network")
 
-	uncastedService, err := castedNetwork.GetService(cassandraIds[1])
+	uncastedService, err := castedNetwork.GetService(cassandraIds[0])
 	logrus.Infof("got uncasted service")
 	if err != nil {
 		return stacktrace.Propagate(err, "An error occurred getting the cassandra service")
@@ -75,17 +76,33 @@ func (test *CassandraTest) Run(uncastedNetwork networks.Network) error {
 	// Necessary again due to no Go generics
 	castedService := uncastedService.(*cassandra_service.CassandraService)
 
-	logrus.Infof("About to get a cassandra session.")
+	logrus.Infof("About to get a cassandra seedSession.")
 
-	session, err := castedService.CreateSession()
+	seedSession, err := castedService.CreateSession()
 	if err != nil {
-		return stacktrace.Propagate(err, "Failed to create session on the cassandra service.")
+		return stacktrace.Propagate(err, "Failed to create seedSession on the cassandra service.")
 	}
-	defer session.Close()
+	defer seedSession.Close()
 
+	err = writeTweet(seedSession)
+	if err != nil {
+		return stacktrace.Propagate(err, "Failed to write tweet")
+	}
+
+	for i := 0; i < 3; i++ {
+		logrus.Infof("Reading tweet from node %+v", cassandraIds[i])
+		err := readAndConfirmTweet(castedNetwork, cassandraIds[i])
+		if err != nil {
+			return stacktrace.Propagate(err, "Test failed reading tweet from node %v", cassandraIds[i])
+		}
+	}
+	return nil
+}
+
+func writeTweet(session *gocql.Session) error {
 	// Create a keyspace "test" to use for testing purposes
 	logrus.Infof("Creating a keyspace in Cassandra.")
-	err = session.Query(`CREATE KEYSPACE test WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 3 }`).Exec()
+	err := session.Query(`CREATE KEYSPACE test WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 3 }`).Exec()
 	if err != nil {
 		return stacktrace.Propagate(err, "Failed to create cassandra keyspace.")
 	}
@@ -103,13 +120,33 @@ func (test *CassandraTest) Run(uncastedNetwork networks.Network) error {
 	if err != nil {
 		return stacktrace.Propagate(err, "Failed to insert tweet into table.")
 	}
+	return nil
+}
 
+
+func readAndConfirmTweet(network *networks.NetworkContext, nodeId services.ServiceID) error {
+	uncastedService, err := network.GetService(nodeId)
+	logrus.Infof("got uncasted service")
+	if err != nil {
+		return stacktrace.Propagate(err, "An error occurred getting the cassandra service")
+	}
+	// Necessary again due to no Go generics
+	castedService := uncastedService.(*cassandra_service.CassandraService)
+
+	logrus.Infof("About to get a cassandra session.")
+
+	session, err := castedService.CreateSession()
+	if err != nil {
+		return stacktrace.Propagate(err, "Failed to create session on the cassandra service.")
+	}
+	defer session.Close()
 	// Read a tweet from "tweet" table
 	logrus.Infof("Reading a tweet from the 'tweet' table in Cassandra.")
 	var (
 		id   gocql.UUID
 		text string
 	)
+
 	err = session.Query(`SELECT id, text FROM test.tweet WHERE timeline = ? LIMIT 1 ALLOW FILTERING`, "me").Scan(&id, &text)
 	if err != nil {
 		return stacktrace.Propagate(err, "Failed to read lines from tweet table.")

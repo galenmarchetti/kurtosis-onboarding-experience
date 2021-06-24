@@ -26,7 +26,7 @@ func (factory CassandraServiceConfigFactory) GetCreationConfig(containerIpAddr s
 	result := services.NewContainerCreationConfigBuilder(
 		factory.image,
 		testVolumeMountpoint,
-		func(serviceCtx *services.ServiceContext) services.Service { return NewCassandraService(serviceCtx, nativeProtocolClientPort) },
+		func(serviceCtx *services.ServiceContext) services.Service { return NewCassandraService(serviceCtx) },
 	).WithUsedPorts(map[string]bool{
 		/*
 			NEW USER ONBOARDING:

@@ -27,7 +27,13 @@ Cassandra Onboarding Testsuite
 
 ## Implement the Advanced Cassandra Test
 
-1. Add a second cassandra node to your Kurtosis-deployed cassandra cluster.
-    1. TODO TODO TODO Fill this in
-2. Add a third cassandra node to your Kurtosis-deployed cassandra cluster.
-    1. TODO TODO TODO Fill this in
+   1. Modify the Cassandra Container Config Factor GetCreationConfig to expose the cluster communication port in addition to the native protocol client port using the WithUsedPorts() method on the NewContainerCreationConfigBuilder.
+   2. Modify the Cassandra Container Config Factory GetRunConfig method to set the environment variable of a cassandra node appropriately to instruct a cassandra node to connect to an existing cluster.
+       1. Modify the GetRunConfig method, using the WithEnvironmentVariableOverrides() function on the NewContainerRunConfigBuilder, to set an environment variable called CASSANDRA_SEEDS to the value of the "Cassandra Seed Node IP Address" on the factory struct.
+   3. Modify the Setup() method of the cassandra_test file so that three nodes are set up instead of just one, with the second and third nodes pointing to the first as the “seed node”.
+       1. Add two more service ids to the  []services.ServiceID to store the total three service ids of the services in your network.
+       2. After creating the seed node, store the seed node IP address in a variable so that it can be used later to create the second and third nodes with the ability to connect to the existing cluster.
+       3. Iterate through the remaining serviceIDs (second and third) with a for loop, adding them to the network, and waiting for availability before continuing to the next.
+       4. Verify that running your testsuite still runs a passing test, although the setup method will take a lot longer now given the time it takes for cassandra nodes to sequentially enter a cluster.
+   4. Modify the Run() method of the cassandra_test file so that the tweet is written to one node, and then read from all three nodes to verify that the data has been persisted across the entire cluster.
+       1. Verify that running your testsuite returns a passing test where the tweet is read and confirmed from each node in the cluster.

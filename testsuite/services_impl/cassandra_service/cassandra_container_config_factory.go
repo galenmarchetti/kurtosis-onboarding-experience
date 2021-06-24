@@ -10,7 +10,6 @@ const (
 
 	clusterCommunicationPort = 7000
 	nativeProtocolClientPort = 9042
-	jmxPort = 7199
 )
 
 type CassandraServiceConfigFactory struct {

@@ -35,7 +35,7 @@ func (test CassandraTest) Setup(networkCtx *networks.NetworkContext) (networks.N
 		NEW USER ONBOARDING:
 		- Add services multiple times using the below logic in order to have more than one service.
 	*/
-	configFactory := cassandra_service.NewCassandraServiceConfigFactory(test.CassandraServiceImage)
+	configFactory := cassandra_service.NewCassandraServiceConfigFactory(test.CassandraServiceImage, "")
 	_, hostPortBindings, availabilityChecker, err := networkCtx.AddService(cassandraServiceID, configFactory)
 	if err != nil {
 		return nil, stacktrace.Propagate(err, "An error occurred adding the service")

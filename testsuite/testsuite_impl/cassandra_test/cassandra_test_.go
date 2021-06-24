@@ -68,27 +68,26 @@ func (test *CassandraTest) Run(uncastedNetwork networks.Network) error {
 	castedNetwork := uncastedNetwork.(*networks.NetworkContext)
 	logrus.Infof("casted network")
 
+
+	// Write tweet to the seed node.
 	uncastedService, err := castedNetwork.GetService(cassandraIds[0])
 	logrus.Infof("got uncasted service")
 	if err != nil {
 		return stacktrace.Propagate(err, "An error occurred getting the cassandra service")
 	}
-	// Necessary again due to no Go generics
 	castedService := uncastedService.(*cassandra_service.CassandraService)
-
 	logrus.Infof("About to get a cassandra seedSession.")
-
 	seedSession, err := castedService.CreateSession()
 	if err != nil {
 		return stacktrace.Propagate(err, "Failed to create seedSession on the cassandra service.")
 	}
 	defer seedSession.Close()
-
 	err = writeTweet(seedSession)
 	if err != nil {
 		return stacktrace.Propagate(err, "Failed to write tweet")
 	}
 
+	// Read tweet from each node in the network.
 	for i := 0; i < 3; i++ {
 		logrus.Infof("Reading tweet from node %+v", cassandraIds[i])
 		err := readAndConfirmTweet(castedNetwork, cassandraIds[i])

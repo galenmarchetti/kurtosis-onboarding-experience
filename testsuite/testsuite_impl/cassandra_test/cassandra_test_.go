@@ -14,7 +14,7 @@ const (
 	cassandraServiceID services.ServiceID = "cassandra-1"
 
 	waitForStartupTimeBetweenPolls = 1 * time.Second
-	waitForStartupMaxPolls = 60
+	waitForStartupMaxPolls = 90
 )
 
 type CassandraTest struct {
@@ -26,7 +26,7 @@ func NewCassandraTest(image string) *CassandraTest {
 }
 
 func (test CassandraTest) Configure(builder *testsuite.TestConfigurationBuilder) {
-	builder.WithSetupTimeoutSeconds(60).WithRunTimeoutSeconds(60)
+	builder.WithSetupTimeoutSeconds(360).WithRunTimeoutSeconds(360)
 }
 
 func (test CassandraTest) Setup(networkCtx *networks.NetworkContext) (networks.Network, error) {

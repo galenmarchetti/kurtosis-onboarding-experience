@@ -38,14 +38,15 @@ func (test CassandraTest) Setup(networkCtx *networks.NetworkContext) (networks.N
 		- Add services multiple times using the below logic in order to have more than one service.
 	*/
 	configFactory := cassandra_service.NewCassandraServiceConfigFactory(test.CassandraServiceImage, "")
-	service, _, availabilityChecker, err := networkCtx.AddService(cassandraIds[0], configFactory)
+	uncastedService, _, availabilityChecker, err := networkCtx.AddService(cassandraIds[0], configFactory)
 	if err != nil {
 		return nil, stacktrace.Propagate(err, "An error occurred adding the service")
 	}
 	if err := availabilityChecker.WaitForStartup(waitForStartupTimeBetweenPolls, waitForStartupMaxPolls); err != nil {
 		return nil, stacktrace.Propagate(err, "An error occurred waiting for the service to become available")
 	}
-	logrus.Infof("Added Cassandra service with IP address: %v", service)
+	castedService := uncastedService.(*cassandra_service.CassandraService)
+	logrus.Infof("Added Cassandra service with IP address: %v", castedService)
 
 	return networkCtx, nil
 }

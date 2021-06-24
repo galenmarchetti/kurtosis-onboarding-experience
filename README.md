@@ -21,8 +21,9 @@ Cassandra Onboarding Testsuite
     5. Verify that running `bash scripts/build-and-run.sh all` generates output indicating that one test ran (cassandraTest) and that it passed
 6. Write the basic cassandra test logic to write a row to the cassandra node, and then read it back.
     1. In your preferred IDE, open the Cassandra test definition at `testsuite/testsuite_impl/cassandra_test/cassandra_test_.go`
-    2. Add the test logic in [this Gist](https://gist.github.com/galenmarchetti/118a2555749c7c47760cb58faa251795) to the Run() function in the Cassandra test, replacing the final return nil line with the return line from the code in the Gist.
-    3. Verify that running `bash scripts/build-and-run.sh all` generates output indicating that one test ran (cassandraTest), and that the test contained business logic for a Cassandra test, and that it passed.
+    2. Add the helper functions `writeTweet` and `readAndConfirmTweet` in [this Gist](https://gist.github.com/galenmarchetti/98252fec7b92d2174d71ee7c72261bd3) to the bottom of the file, so they can be used later.
+    3. Add the test logic in [this Gist](https://gist.github.com/galenmarchetti/118a2555749c7c47760cb58faa251795) to the Run() function in the Cassandra test, replacing the final return nil line with the return line from the code in the Gist.
+    4. Verify that running `bash scripts/build-and-run.sh all` generates output indicating that one test ran (cassandraTest), and that the test contained business logic for a Cassandra test, and that it passed.
 
 ## Implement the Advanced Cassandra Test
 

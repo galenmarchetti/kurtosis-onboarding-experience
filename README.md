@@ -28,15 +28,18 @@ Cassandra Onboarding Testsuite
 ## Implement the Advanced 3-Node Cassandra Test
 
    1. Modify the Cassandra container configuration to enable communication in a cluster.
-       1. Open the cluster communication port on the Cassandra node so that each node can communicate to other nodes.
+       1. Open the cassandra container configuration factory file.
+       2. Expose the cluster communication port on the Cassandra node so that each node can communicate to other nodes.
            1. Modify the Cassandra Container Config Factory `GetCreationConfig()` method to expose the cluster communication port using the `WithUsedPorts()` method on the `NewContainerCreationConfigBuilder`.
-       2. Set an environment variable on the Cassandra node specifying the IP address of an existing node in the cluster, so nodes knows how to join the cluster.
+       3. Set an environment variable on the Cassandra node specifying the IP address of an existing node in the cluster, so nodes knows how to join the cluster.
            1. Modify the `GetRunConfig()` method using the `WithEnvironmentVariableOverrides()` function on the NewContainerRunConfigBuilder to set an environment variable called `CASSANDRA_SEEDS` to the value of the cassandra seed node IP address on the factory struct.
-   3. Setup three cassandra nodes for the test, instead of just one.
-       1. Add two more service ids to the `[]services.ServiceID` array to store the total three service ids of the services in your network.
-       2. After creating the seed node, store the seed node IP address in a variable so that it can be used later to create the second and third nodes with the ability to connect to the existing cluster.
-       3. Iterate through the remaining serviceIDs (second and third) with a for loop, adding them to the network, and waiting for availability before continuing to the next.
-       4. Verify that running your testsuite still runs a passing test, although the setup method will take a lot longer now given the time it takes for cassandra nodes to sequentially enter a cluster.
-   4. Modify the test logic to write a tweet to one node, and then verify that reading from all three nodes in the cluster gives the same tweet.
-       1. Modify the `Run()` method of the cassandra test file so that it writes the tweet to one node, and then reads it from all three nodes.
-       2. Verify that running your testsuite returns a passing test where the tweet is read and confirmed from each node in the cluster.
+   2. Modify the Cassandra test file to test a 3-node cluster.
+       1. Open the cassandra test file.
+       2. Setup three cassandra nodes for the test, instead of just one.
+           1. Add two more service ids to the `[]services.ServiceID` array in the test file to store the total three service ids of the services in your network.
+           2. After creating the seed node, store the seed node IP address in a variable so that it can be used later to create the second and third nodes with the ability to connect to the existing cluster.
+           3. Iterate through the remaining serviceIDs (second and third) with a for loop, adding them to the network, and waiting for availability before continuing to the next.
+           4. Verify that running your testsuite still runs a passing test, although the setup method will take a lot longer now given the time it takes for cassandra nodes to sequentially enter a cluster.
+       3. Modify the test logic to write a tweet to one node, and then verify that reading from all three nodes in the cluster gives the same tweet.
+           1. Modify the `Run()` method of the cassandra test file so that it writes the tweet to one node, and then reads it from all three nodes.
+           2. Verify that running your testsuite returns a passing test where the tweet is read and confirmed from each node in the cluster.

@@ -11,11 +11,13 @@ import (
 )
 
 const (
-	cassandraServiceID services.ServiceID = "cassandra-1"
-
 	waitForStartupTimeBetweenPolls = 1 * time.Second
-	waitForStartupMaxPolls = 60
+	waitForStartupMaxPolls = 90
 )
+
+var cassandraIds = []services.ServiceID{
+	"cassandra-0",
+}
 
 type CassandraTest struct {
 	CassandraServiceImage string
@@ -26,7 +28,7 @@ func NewCassandraTest(image string) *CassandraTest {
 }
 
 func (test CassandraTest) Configure(builder *testsuite.TestConfigurationBuilder) {
-	builder.WithSetupTimeoutSeconds(60).WithRunTimeoutSeconds(60)
+	builder.WithSetupTimeoutSeconds(360).WithRunTimeoutSeconds(360)
 }
 
 func (test CassandraTest) Setup(networkCtx *networks.NetworkContext) (networks.Network, error) {
@@ -35,15 +37,16 @@ func (test CassandraTest) Setup(networkCtx *networks.NetworkContext) (networks.N
 		NEW USER ONBOARDING:
 		- Add services multiple times using the below logic in order to have more than one service.
 	*/
-	configFactory := cassandra_service.NewCassandraServiceConfigFactory(test.CassandraServiceImage)
-	_, hostPortBindings, availabilityChecker, err := networkCtx.AddService(cassandraServiceID, configFactory)
+	configFactory := cassandra_service.NewCassandraServiceConfigFactory(test.CassandraServiceImage, "")
+	service, _, availabilityChecker, err := networkCtx.AddService(cassandraIds[0], configFactory)
 	if err != nil {
 		return nil, stacktrace.Propagate(err, "An error occurred adding the service")
 	}
 	if err := availabilityChecker.WaitForStartup(waitForStartupTimeBetweenPolls, waitForStartupMaxPolls); err != nil {
 		return nil, stacktrace.Propagate(err, "An error occurred waiting for the service to become available")
 	}
-	logrus.Infof("Added service with host port bindings: %+v", hostPortBindings)
+	logrus.Infof("Added Cassandra service with IP address: %v", service)
+
 	return networkCtx, nil
 }
 
@@ -52,7 +55,7 @@ func (test CassandraTest) Run(uncastedNetwork networks.Network) error {
 	// Necessary because Go doesn't have generics
 	castedNetwork := uncastedNetwork.(*networks.NetworkContext)
 
-	uncastedService, err := castedNetwork.GetService(cassandraServiceID)
+	uncastedService, err := castedNetwork.GetService(cassandraIds[0])
 	if err != nil {
 		return stacktrace.Propagate(err, "An error occurred getting the datastore service")
 	}

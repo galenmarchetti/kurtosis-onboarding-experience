@@ -14,11 +14,11 @@ const (
 
 type CassandraServiceConfigFactory struct {
 	image     string
-	port	  int
+	cassandraSeedNodeIPAddress string
 }
 
-func NewCassandraServiceConfigFactory(image string) *CassandraServiceConfigFactory {
-	return &CassandraServiceConfigFactory{image: image}
+func NewCassandraServiceConfigFactory(image string, cassandraSeedNodeIPAddress string) *CassandraServiceConfigFactory {
+	return &CassandraServiceConfigFactory{image: image, cassandraSeedNodeIPAddress: cassandraSeedNodeIPAddress}
 }
 
 
@@ -26,7 +26,7 @@ func (factory CassandraServiceConfigFactory) GetCreationConfig(containerIpAddr s
 	result := services.NewContainerCreationConfigBuilder(
 		factory.image,
 		testVolumeMountpoint,
-		func(serviceCtx *services.ServiceContext) services.Service { return NewCassandraService(serviceCtx, nativeProtocolClientPort) },
+		func(serviceCtx *services.ServiceContext) services.Service { return NewCassandraService(serviceCtx) },
 	).WithUsedPorts(map[string]bool{
 		/*
 			NEW USER ONBOARDING:
@@ -39,6 +39,8 @@ func (factory CassandraServiceConfigFactory) GetCreationConfig(containerIpAddr s
 }
 
 func (factory CassandraServiceConfigFactory) GetRunConfig(containerIpAddr string, generatedFileFilepaths map[string]string) (*services.ContainerRunConfig, error) {
-	result := services.NewContainerRunConfigBuilder().Build()
+	result := services.NewContainerRunConfigBuilder().WithEnvironmentVariableOverrides(map[string]string{
+		"CASSANDRA_LISTEN_ADDRESS": containerIpAddr,
+	}).Build()
 	return result, nil
 }

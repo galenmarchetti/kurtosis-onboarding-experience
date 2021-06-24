@@ -7,11 +7,10 @@ import (
 
 type CassandraService struct {
 	serviceCtx *services.ServiceContext
-	port       int
 }
 
-func NewCassandraService(serviceCtx *services.ServiceContext, port int) *CassandraService {
-	return &CassandraService{serviceCtx: serviceCtx, port: port}
+func NewCassandraService(serviceCtx *services.ServiceContext) *CassandraService {
+	return &CassandraService{serviceCtx: serviceCtx}
 }
 
 // ===========================================================================================

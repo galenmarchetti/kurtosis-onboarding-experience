@@ -1,7 +1,7 @@
 Cassandra Onboarding Testsuite
 =====================
 
-## Implement the Basic Single Node Cassandra Test
+## Implement a Basic Single Node Cassandra Test
 
 1. Create an account on https://kurtosistech.com if you don't have one yet.
 2. Verify that the Docker daemon is running on your local machine.
@@ -26,7 +26,7 @@ Cassandra Onboarding Testsuite
     3. Add the test logic in [this Gist](https://gist.github.com/galenmarchetti/118a2555749c7c47760cb58faa251795) to the Run() function in the Cassandra test, replacing the final return nil line with the return line from the code in the Gist.
     4. Verify that running `bash scripts/build-and-run.sh all` generates output indicating that one test ran (cassandraTest), and that the test contained business logic for a Cassandra test, and that it passed.
 
-## Implement the Advanced 3-Node Cassandra Test
+## Implement an Advanced 3-Node Cassandra Test
 
 1. Modify the Cassandra container configuration to enable communication in a cluster.
    1. Open the cassandra container configuration factory file.

@@ -1,22 +1,22 @@
-package cassandra_service
+package my_service
 
 import (
 	"github.com/kurtosis-tech/kurtosis-libs/golang/lib/services"
 )
 
 
-type CassandraService struct {
+type MyService struct {
 	serviceCtx *services.ServiceContext
 }
 
-func NewCassandraService(serviceCtx *services.ServiceContext) *CassandraService {
-	return &CassandraService{serviceCtx: serviceCtx}
+func NewMyService(serviceCtx *services.ServiceContext) *MyService {
+	return &MyService{serviceCtx: serviceCtx}
 }
 
 // ===========================================================================================
 //                              Service interface methods
 // ===========================================================================================
-func (service CassandraService) IsAvailable() bool {
+func (service MyService) IsAvailable() bool {
 	/*
 		NEW USER ONBOARDING:
 		- Write logic to verify that Cassandra is available and ready to be tested.

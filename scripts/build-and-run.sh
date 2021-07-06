@@ -24,12 +24,7 @@ if [ "${action}" == "help" ]; then
     show_help_and_exit
 fi
 
-## NEW USER ONBOARDING:
-## - Add the Docker image tag for a service you want to test to this map by modifying the placeholder "nginx".
-## - Change "myCustomServiceImage" to a name that reflects your actual service.
-custom_params_json='{
-    "cassandraImageName": "cassandra"
-}'
+custom_params_json='{}'
 # >>>>>>>> Add custom testsuite parameters here <<<<<<<<<<<<<
 
 bash "${kurtosis_core_dirpath}/build-and-run-core.sh" \

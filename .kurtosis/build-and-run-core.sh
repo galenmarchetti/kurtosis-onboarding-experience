@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Copyright (c) 2020 - present Kurtosis Technologies LLC.
 # All Rights Reserved.
 
@@ -128,18 +130,19 @@ if "${do_build}"; then
         exit 1
     fi
 
-    echo "Building '${suite_image}' Docker image..."
+    echo "Building testsuite into a Docker image named '${suite_image}'..."
     # The BUILD_TIMESTAMP variable is provided because Docker sometimes caches steps it shouldn't and we need a constantly-changing ARG so that we can intentionally bust the cache
     # See: https://stackoverflow.com/questions/31782220/how-can-i-prevent-a-dockerfile-instruction-from-being-cached
     if ! docker build --build-arg BUILD_TIMESTAMP="$(date +"%FT%H:%M:%S")" -t "${suite_image}:${docker_tag}" -f "${dockerfile_filepath}" "${repo_dirpath}"; then
         echo "Error: Docker build of the testsuite failed" >&2
         exit 1
     fi
+    echo "Successfully built Docker image '${suite_image}' containing the testsuite"
 fi
 
 if "${do_run}"; then
     # The funky ${1+"${@}"} incantation is how you you feed arguments exactly as-is to a child script in Bash
-    # ${*} loses quoting and ${@} trips set -e if no arguments are passed, so this incantation says, "if and only if 
+    # ${*} loses quoting and ${@} trips set -e if no arguments are passed, so this incantation says, "if and only if
     #  ${1} exists, evaluate ${@}"
     if ! bash "${wrapper_filepath}" ${1+"${@}"} "${suite_image}:${docker_tag}"; then
         echo "Error: Testsuite execution failed"

@@ -31,7 +31,7 @@ func (test MyTest) Setup(networkCtx *networks.NetworkContext) (networks.Network,
 		NEW USER ONBOARDING:
 		- Add services multiple times using the below logic in order to have more than one service.
 	*/
-	configFactory := my_service.NewMyServiceConfigFactory("cassandra", "")
+	configFactory := my_service.NewMyServiceConfigFactory("ethereum/go-ethereum", "")
 
 
 	uncastedService, _, availabilityChecker, err := networkCtx.AddService(serviceIDs[0], configFactory)

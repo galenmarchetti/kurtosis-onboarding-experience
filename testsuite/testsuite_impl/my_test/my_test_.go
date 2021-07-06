@@ -13,8 +13,6 @@ import (
 const (
 	waitForStartupTimeBetweenPolls = 1 * time.Second
 	waitForStartupMaxPolls = 90
-
-	imageToBeTested = "cassandra"
 )
 
 var serviceIDs = []services.ServiceID{
@@ -33,7 +31,9 @@ func (test MyTest) Setup(networkCtx *networks.NetworkContext) (networks.Network,
 		NEW USER ONBOARDING:
 		- Add services multiple times using the below logic in order to have more than one service.
 	*/
-	configFactory := my_service.NewMyServiceConfigFactory(imageToBeTested, "")
+	configFactory := my_service.NewMyServiceConfigFactory("cassandra", "")
+
+
 	uncastedService, _, availabilityChecker, err := networkCtx.AddService(serviceIDs[0], configFactory)
 	if err != nil {
 		return nil, stacktrace.Propagate(err, "An error occurred adding the service")

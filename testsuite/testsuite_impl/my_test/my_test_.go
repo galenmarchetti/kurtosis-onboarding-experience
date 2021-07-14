@@ -2,8 +2,8 @@ package my_test
 
 import (
 	"github.com/galenmarchetti/kurtosis-onboarding-test/testsuite/services_impl/my_service"
-	"github.com/kurtosis-tech/kurtosis-libs/golang/lib/networks"
-	"github.com/kurtosis-tech/kurtosis-libs/golang/lib/services"
+	"github.com/kurtosis-tech/kurtosis-client/golang/networks"
+	"github.com/kurtosis-tech/kurtosis-client/golang/services"
 	"github.com/kurtosis-tech/kurtosis-libs/golang/lib/testsuite"
 	"github.com/palantir/stacktrace"
 	"github.com/sirupsen/logrus"
@@ -34,15 +34,14 @@ func (test MyTest) Setup(networkCtx *networks.NetworkContext) (networks.Network,
 	configFactory := my_service.NewMyServiceConfigFactory("ethereum/client-go", "")
 
 
-	uncastedService, _, availabilityChecker, err := networkCtx.AddService(serviceIDs[0], configFactory)
+	serviceCtx, _, err := networkCtx.AddService(serviceIDs[0], configFactory)
 	if err != nil {
 		return nil, stacktrace.Propagate(err, "An error occurred adding the service")
 	}
-	if err := availabilityChecker.WaitForStartup(waitForStartupTimeBetweenPolls, waitForStartupMaxPolls); err != nil {
-		return nil, stacktrace.Propagate(err, "An error occurred waiting for the service to become available")
-	}
-	castedService := uncastedService.(*my_service.MyService)
-	logrus.Infof("Added service with IP address: %v", castedService)
+
+	// TODO check for availability?????
+
+	logrus.Infof("Added service with IP address: %v", serviceCtx.GetIPAddress())
 
 	return networkCtx, nil
 }
@@ -52,14 +51,11 @@ func (test MyTest) Run(uncastedNetwork networks.Network) error {
 	// Necessary because Go doesn't have generics
 	castedNetwork := uncastedNetwork.(*networks.NetworkContext)
 
-	uncastedService, err := castedNetwork.GetService(serviceIDs[0])
+	serviceCtx, err := castedNetwork.GetServiceContext(serviceIDs[0])
 	if err != nil {
-		return stacktrace.Propagate(err, "An error occurred getting the datastore service")
+		return stacktrace.Propagate(err, "An error occurred getting the datastore service context")
 	}
-
-	// Necessary again due to no Go generics
-	castedService := uncastedService.(*my_service.MyService)
-	logrus.Infof("Service is available: %v", castedService.IsAvailable())
+	logrus.Infof("Got service context for datastore service '%v'", serviceCtx.GetServiceID())
 
 	/*
 		NEW USER ONBOARDING:

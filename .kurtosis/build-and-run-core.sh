@@ -142,7 +142,7 @@ fi
 
 if "${do_run}"; then
     # The funky ${1+"${@}"} incantation is how you you feed arguments exactly as-is to a child script in Bash
-    # ${*} loses quoting and ${@} trips set -e if no arguments are passed, so this incantation says, "if and only if
+    # ${*} loses quoting and ${@} trips set -e if no arguments are passed, so this incantation says, "if and only if 
     #  ${1} exists, evaluate ${@}"
     if ! bash "${wrapper_filepath}" ${1+"${@}"} "${suite_image}:${docker_tag}"; then
         echo "Error: Testsuite execution failed"

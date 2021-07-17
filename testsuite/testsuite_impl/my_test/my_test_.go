@@ -2,6 +2,7 @@ package my_test
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"github.com/galenmarchetti/kurtosis-onboarding-test/testsuite/services_impl/my_service"
 	"github.com/kurtosis-tech/kurtosis-client/golang/networks"
@@ -9,6 +10,8 @@ import (
 	"github.com/kurtosis-tech/kurtosis-libs/golang/lib/testsuite"
 	"github.com/palantir/stacktrace"
 	"github.com/sirupsen/logrus"
+	"io"
+	"io/ioutil"
 	"net/http"
 	"time"
 )
@@ -53,7 +56,9 @@ func (test MyTest) Setup(networkCtx *networks.NetworkContext) (networks.Network,
 		if err == nil {
 			firstNodeUp = true
 			logrus.Infof("Enode address: %v", enodeAddress)
+			break
 		}
+		time.Sleep(waitForStartupTimeBetweenPolls)
 	}
 	if !firstNodeUp {
 		return nil, stacktrace.Propagate(err, "First geth node failed to come up")
@@ -92,10 +97,25 @@ func sendRpcCall(ipAddress string, rpcJsonString string, targetStruct interface{
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode == http.StatusOK {
+		// For debugging
+		var teeBuf bytes.Buffer
+		tee := io.TeeReader(resp.Body, &teeBuf)
+		bodyBytes, err := ioutil.ReadAll(tee)
+		if err != nil {
+			return stacktrace.Propagate(err, "Error parsing geth node response into bytes.")
+		}
+		bodyString := string(bodyBytes)
+		logrus.Tracef("Response for RPC call %v: %v", rpcJsonString, bodyString)
+
+		err = json.NewDecoder(&teeBuf).Decode(targetStruct)
+		if err != nil {
+			return stacktrace.Propagate(err, "Error parsing geth node response into target struct.")
+		}
+		return nil
+	} else {
 		return stacktrace.NewError("Received non-200 status code rom admin RPC api: %v", resp.StatusCode)
 	}
-	return nil
 }
 
 func getEnodeAddress(ipAddress string) (string, error) {

@@ -8,6 +8,7 @@ Cassandra Onboarding Testsuite
 4. Run the empty test to verify that everything works on your local machine.
        1. Run `bash scripts/build-and-run.sh all`
        2. Verify that the output of the build-and-run.sh script indicates that one test ran (myTest) and that it passed.
+5. Change the docker image used for your test in the file `testsuite_impl/my_test/my_test_.go` from the tutorial `hello-world` image to `ethereum/client-go`.
 
 ## Implement a Basic Single Node Cassandra Test
 

@@ -31,7 +31,7 @@ func (test MyTest) Setup(networkCtx *networks.NetworkContext) (networks.Network,
 		NEW USER ONBOARDING:
 		- Add services multiple times using the below logic in order to have more than one service.
 	*/
-	configFactory := my_service.NewMyServiceConfigFactory("ethereum/client-go", "")
+	configFactory := my_service.NewMyServiceConfigFactory("hello-world", "")
 
 
 	serviceCtx, _, err := networkCtx.AddService(serviceIDs[0], configFactory)

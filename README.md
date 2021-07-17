@@ -1,6 +1,11 @@
 Cassandra Onboarding Testsuite
 =====================
 
+## Implement a Basic Single Node Ethereum Test
+1. Create an account on https://kurtosistech.com if you don't have one yet.
+2. Verify that the Docker daemon is running on your local machine.
+3. Clone this repository by running `git clone https://github.com/kurtosis-tech/kurtosis-onboarding-experience.git`
+
 ## Implement a Basic Single Node Cassandra Test
 
 1. Create an account on https://kurtosistech.com if you don't have one yet.

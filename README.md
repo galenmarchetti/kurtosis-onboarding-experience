@@ -8,7 +8,15 @@ Cassandra Onboarding Testsuite
 4. Run the empty test to verify that everything works on your local machine.
        1. Run `bash scripts/build-and-run.sh all`
        2. Verify that the output of the build-and-run.sh script indicates that one test ran (myTest) and that it passed.
-5. Change the docker image used for your test in the file `testsuite_impl/my_test/my_test_.go` from the tutorial `hello-world` image to `ethereum/client-go`.
+5. Configure your test to use the Ethereum docker image.
+    1. In your preferred IDE, open your test file at `testsuite_impl/my_test/my_test_.go`
+    2. Change the argument to the ConfigFactory constructor in the `SetUp()` method to take in the ethereum docker image tag, as in [this Gist](https://gist.github.com/galenmarchetti/d893b8529ada10f284bdb20d6e4da2df)
+    3. Run `bash scripts/build-and-run.sh all`
+    4. Verify that running `bash scripts/build-and-run.sh all` generates output that indicates "myTest" ran and that it passed.
+6. Write a basic RPC call that verifies that your Ethereum node was set up correctly.
+    1. Configure the start command of your Ethereum node to enable RPC communication.
+    1. Add rpcPort and helper RPC call method to test file, so that you can interact with your Ethereum node.
+  
 
 ## Implement a Basic Single Node Cassandra Test
 

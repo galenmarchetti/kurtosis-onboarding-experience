@@ -1,6 +1,7 @@
 package my_service
 
 import (
+	"fmt"
 	"github.com/kurtosis-tech/kurtosis-client/golang/services"
 )
 
@@ -22,7 +23,7 @@ func (factory MyServiceConfigFactory) GetCreationConfig(containerIpAddr string) 
 	result := services.NewContainerCreationConfigBuilder(
 		factory.image,
 		testVolumeMountpoint,
-	).Build()
+	).WithUsedPorts(map[string]bool{"8565/tcp": true}).Build()
 
 	return result, nil
 }
@@ -31,6 +32,14 @@ func (factory MyServiceConfigFactory) GetRunConfig(
 		containerIpAddr string,
 		generatedFileFilepaths map[string]string,
 		staticFileFilepaths map[services.StaticFileID]string) (*services.ContainerRunConfig, error) {
-	result := services.NewContainerRunConfigBuilder().Build()
+	entrypointCommand := fmt.Sprintf("geth --nodiscover -http --http.api admin --http.addr %v --http.corsdomain '*' --nat extip:%v",
+		containerIpAddr,
+		containerIpAddr)
+	entrypointArgs := []string{
+		"/bin/sh",
+		"-c",
+		entrypointCommand,
+	}
+	result := services.NewContainerRunConfigBuilder().WithEntrypointOverride(entrypointArgs).Build()
 	return result, nil
 }

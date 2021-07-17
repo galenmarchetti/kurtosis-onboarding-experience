@@ -17,6 +17,8 @@ const (
 	waitForStartupTimeBetweenPolls = 1 * time.Second
 	waitForStartupMaxPolls = 90
 
+	adminInfoRpcCall = `{"jsonrpc":"2.0","method": "admin_nodeInfo","params":[],"id":67}`
+
 	rpcPort = 8545
 )
 
@@ -42,10 +44,20 @@ func (test MyTest) Setup(networkCtx *networks.NetworkContext) (networks.Network,
 		return nil, stacktrace.Propagate(err, "An error occurred adding the service")
 	}
 
-	// TODO check for availability?????
 
 	logrus.Infof("Added service with IP address: %v", serviceCtx.GetIPAddress())
 
+	firstNodeUp := false
+	for pollCount := 0; pollCount < waitForStartupMaxPolls; pollCount++ {
+		enodeAddress, err := getEnodeAddress(serviceCtx.GetIPAddress())
+		if err == nil {
+			firstNodeUp = true
+			logrus.Infof("Enode address: %v", enodeAddress)
+		}
+	}
+	if !firstNodeUp {
+		return nil, stacktrace.Propagate(err, "First geth node failed to come up")
+	}
 	return networkCtx, nil
 }
 
@@ -85,4 +97,25 @@ func sendRpcCall(ipAddress string, rpcJsonString string, targetStruct interface{
 	}
 	return nil
 }
+
+func getEnodeAddress(ipAddress string) (string, error) {
+	nodeInfoResponse := new(NodeInfoResponse)
+	err := sendRpcCall(ipAddress, adminInfoRpcCall, nodeInfoResponse)
+	if err != nil {
+		return "", stacktrace.Propagate(err, "Failed to send admin node info RPC request to geth node.")
+	}
+	return nodeInfoResponse.Result.Enode, nil
+}
+
+
+// RPC call types
+
+type NodeInfoResponse struct {
+	Result NodeInfo `json:"result"`
+}
+
+type NodeInfo struct {
+	Enode string `json: "enode"`
+}
+
 

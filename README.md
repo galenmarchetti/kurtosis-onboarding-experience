@@ -5,6 +5,9 @@ Cassandra Onboarding Testsuite
 1. Create an account on https://kurtosistech.com if you don't have one yet.
 2. Verify that the Docker daemon is running on your local machine.
 3. Clone this repository by running `git clone https://github.com/kurtosis-tech/kurtosis-onboarding-experience.git`
+4. Run the empty test to verify that everything works on your local machine.
+       1. Run `bash scripts/build-and-run.sh all`
+       2. Verify that the output of the build-and-run.sh script indicates that one test ran (myTest) and that it passed.
 
 ## Implement a Basic Single Node Cassandra Test
 

@@ -21,7 +21,6 @@ const (
 	waitForStartupMaxPolls = 90
 
 	adminInfoRpcCall = `{"jsonrpc":"2.0","method": "admin_nodeInfo","params":[],"id":67}`
-
 	rpcPort = 8545
 )
 
@@ -84,8 +83,27 @@ func (test MyTest) Run(uncastedNetwork networks.Network) error {
 	return nil
 }
 
+// ==== HELPER FUNCTIONS ====
 
-// ================== BEGIN ETH CODE ================
+func getEnodeAddress(ipAddress string) (string, error) {
+	nodeInfoResponse := new(NodeInfoResponse)
+	err := sendRpcCall(ipAddress, adminInfoRpcCall, nodeInfoResponse)
+	if err != nil {
+		return "", stacktrace.Propagate(err, "Failed to send admin node info RPC request to geth node.")
+	}
+	return nodeInfoResponse.Result.Enode, nil
+}
+
+
+// RPC call types
+
+type NodeInfoResponse struct {
+	Result NodeInfo `json:"result"`
+}
+
+type NodeInfo struct {
+	Enode string `json: "enode"`
+}
 
 func sendRpcCall(ipAddress string, rpcJsonString string, targetStruct interface{}) error {
 	url := fmt.Sprintf("http://%v:%v", ipAddress, rpcPort)
@@ -117,25 +135,4 @@ func sendRpcCall(ipAddress string, rpcJsonString string, targetStruct interface{
 		return stacktrace.NewError("Received non-200 status code rom admin RPC api: %v", resp.StatusCode)
 	}
 }
-
-func getEnodeAddress(ipAddress string) (string, error) {
-	nodeInfoResponse := new(NodeInfoResponse)
-	err := sendRpcCall(ipAddress, adminInfoRpcCall, nodeInfoResponse)
-	if err != nil {
-		return "", stacktrace.Propagate(err, "Failed to send admin node info RPC request to geth node.")
-	}
-	return nodeInfoResponse.Result.Enode, nil
-}
-
-
-// RPC call types
-
-type NodeInfoResponse struct {
-	Result NodeInfo `json:"result"`
-}
-
-type NodeInfo struct {
-	Enode string `json: "enode"`
-}
-
 

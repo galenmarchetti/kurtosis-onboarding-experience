@@ -15,7 +15,8 @@ Cassandra Onboarding Testsuite
     4. Verify that running `bash scripts/build-and-run.sh all` generates output that indicates "myTest" ran and that it passed.
 6. Write a basic RPC call that verifies that your Ethereum node was set up correctly.
     1. Configure the start command of your Ethereum node to enable RPC communication.
-    1. Add rpcPort and helper RPC call method to test file, so that you can interact with your Ethereum node.
+    1. Add constants to your testfile representing RPC port, RPC call for enode, and polling constants to ping your node as in [this Gist](https://gist.github.com/galenmarchetti/cd7af90eeb71b96fac1950c638927478)
+    1. Add RPC helper calls to the bottom of the test file, as in [this Gist](https://gist.github.com/galenmarchetti/a0b77c607268ea2524c3da2671db6475)
   
 
 ## Implement a Basic Single Node Cassandra Test

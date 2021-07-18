@@ -2,12 +2,14 @@ package my_test
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/galenmarchetti/kurtosis-onboarding-test/testsuite/services_impl/my_service"
 	"github.com/kurtosis-tech/kurtosis-client/golang/networks"
 	"github.com/kurtosis-tech/kurtosis-client/golang/services"
 	"github.com/kurtosis-tech/kurtosis-libs/golang/lib/testsuite"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/palantir/stacktrace"
 	"github.com/sirupsen/logrus"
 	"io"
@@ -76,14 +78,29 @@ func (test MyTest) Run(uncastedNetwork networks.Network) error {
 	}
 	logrus.Infof("Got service context for datastore service '%v'", serviceCtx.GetServiceID())
 
-	/*
-		NEW USER ONBOARDING:
-		- Fill in the logic necessary to run your custom test.
-	*/
+	gethClient, err := getClient(serviceCtx.GetIPAddress())
+	if err != nil {
+		return stacktrace.Propagate(err, "Failed to get a gethClient from first node.")
+	}
+	defer gethClient.Close()
+
+	chainId, err := gethClient.ChainID(context.Background())
+
+	logrus.Infof("Chain ID: %v", chainId)
+
 	return nil
 }
 
 // ==== HELPER FUNCTIONS ====
+
+func getClient(ipAddress string) (*ethclient.Client, error) {
+	url := fmt.Sprintf("http://%v:%v", ipAddress, rpcPort)
+	client, err := ethclient.Dial(url)
+	if err != nil {
+		return nil, stacktrace.Propagate(err, "An error occurred getting the Ethereum client")
+	}
+	return client, nil
+}
 
 func getEnodeAddress(ipAddress string) (string, error) {
 	nodeInfoResponse := new(NodeInfoResponse)
@@ -93,6 +110,7 @@ func getEnodeAddress(ipAddress string) (string, error) {
 	}
 	return nodeInfoResponse.Result.Enode, nil
 }
+
 
 
 // RPC call types

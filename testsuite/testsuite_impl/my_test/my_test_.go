@@ -84,9 +84,19 @@ func (test MyTest) Run(uncastedNetwork networks.Network) error {
 	}
 	defer gethClient.Close()
 
-	chainId, err := gethClient.ChainID(context.Background())
+	networkId, err := gethClient.NetworkID(context.Background())
+	if err != nil {
+		return stacktrace.Propagate(err, "Failed to get network ID")
+	}
 
-	logrus.Infof("Chain ID: %v", chainId)
+	exitCode, logOutput, err := serviceCtx.ExecCommand([]string{"/bin/sh", "-c",
+		fmt.Sprintf("geth attach /tmp/geth.ipc --exec 'personal.newAccount()'"),
+	})
+	if err != nil || exitCode != 0 {
+		return stacktrace.NewError("Executing command returned either an error or failing exit code with logs: %+v", string(*logOutput))
+	}
+
+	logrus.Infof("Chain ID: %v", networkId)
 
 	return nil
 }

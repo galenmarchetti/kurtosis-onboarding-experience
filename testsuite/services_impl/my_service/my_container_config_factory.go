@@ -32,7 +32,7 @@ func (factory MyServiceConfigFactory) GetRunConfig(
 		containerIpAddr string,
 		generatedFileFilepaths map[string]string,
 		staticFileFilepaths map[services.StaticFileID]string) (*services.ContainerRunConfig, error) {
-	entrypointCommand := fmt.Sprintf("geth --nodiscover -http --http.api admin --http.addr %v --http.corsdomain '*' --nat extip:%v",
+	entrypointCommand := fmt.Sprintf("geth --dev -http --http.api admin,eth,net,rpc --http.addr %v --http.corsdomain '*' --nat extip:%v",
 		containerIpAddr,
 		containerIpAddr)
 	entrypointArgs := []string{

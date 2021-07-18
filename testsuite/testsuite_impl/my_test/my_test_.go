@@ -88,15 +88,31 @@ func (test MyTest) Run(uncastedNetwork networks.Network) error {
 	if err != nil {
 		return stacktrace.Propagate(err, "Failed to get network ID")
 	}
+	logrus.Infof("Chain ID: %v", networkId)
 
 	exitCode, logOutput, err := serviceCtx.ExecCommand([]string{"/bin/sh", "-c",
-		fmt.Sprintf("geth attach /tmp/geth.ipc --exec 'personal.newAccount()'"),
+		fmt.Sprintf("printf \"passphrase\\npassphrase\\n\" | geth attach /tmp/geth.ipc --exec 'personal.newAccount()'"),
 	})
 	if err != nil || exitCode != 0 {
 		return stacktrace.NewError("Executing command returned either an error or failing exit code with logs: %+v", string(*logOutput))
 	}
+	logrus.Infof("Logs: %+v", string(*logOutput))
 
-	logrus.Infof("Chain ID: %v", networkId)
+	exitCode, logOutput, err = serviceCtx.ExecCommand([]string{"/bin/sh", "-c",
+		fmt.Sprintf("geth attach /tmp/geth.ipc --exec 'eth.sendTransaction({from:eth.coinbase, to:eth.accounts[1], value: web3.toWei(0.05, \"ether\")})'"),
+	})
+	if err != nil || exitCode != 0 {
+		return stacktrace.NewError("Executing command returned either an error or failing exit code with logs: %+v", string(*logOutput))
+	}
+	logrus.Infof("Logs: %+v", string(*logOutput))
+
+	exitCode, logOutput, err = serviceCtx.ExecCommand([]string{"/bin/sh", "-c",
+		fmt.Sprintf("geth attach /tmp/geth.ipc --exec 'eth.getBalance(eth.accounts[1])'"),
+	})
+	if err != nil || exitCode != 0 {
+		return stacktrace.NewError("Executing command returned either an error or failing exit code with logs: %+v", string(*logOutput))
+	}
+	logrus.Infof("Logs: %+v", string(*logOutput))
 
 	return nil
 }
@@ -121,7 +137,17 @@ func getEnodeAddress(ipAddress string) (string, error) {
 	return nodeInfoResponse.Result.Enode, nil
 }
 
-
+/*
+func runGethJsScript(serviceCtx *services.ServiceContext, jsScript string) (string, error) {
+	exitCode, logOutput, err := serviceCtx.ExecCommand([]string{"/bin/sh", "-c",
+		fmt.Sprintf("printf \"passphrase\\npassphrase\\n\" | geth attach /tmp/geth.ipc --exec '%v'", jsScript),
+	})
+	if err != nil || exitCode != 0 {
+		return "", stacktrace.NewError("Executing command returned either an error or failing exit code with logs: %+v", string(*logOutput))
+	}
+	logrus.Infof("Logs: %+v", string(*logOutput))
+	return string(*logOutput), nil
+}*/
 
 // RPC call types
 
